@@ -1,70 +1,91 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Image,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  ListRenderItemInfo,
+} from "react-native";
+import { Href, router } from "expo-router";
+import { useContext } from "react";
+import { MedicineContext } from "@/context/MedicineContext";
+import { Medicine } from "@/types/medicineContextType";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
+const renderItem = ({ item }: ListRenderItemInfo<Medicine>) => {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <Pressable
+      style={styles.item}
+      onPress={() => router.push(`/medicine/${item.id}`)}
+    >
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.dose}>
+        Dose: {item.doseQty} {Number(item.doseQty) > 1 ? "tablets" : "tablet"}{" "}
+        {item.dose} {Number(item.dose) > 1 ? "times" : "time"} a day.
+      </Text>
+    </Pressable>
+  );
+};
+
+export default function HomeScreen(props: any) {
+  const { medicines } = useContext(MedicineContext);
+  return (
+    <SafeAreaView style={styles.container}>
+      <Image
+        source={require("../../assets/images/medicines.png")}
+        style={styles.image}
+      />
+      <View style={styles.content}>
+        <Text style={styles.title}>Welcome to Medicine Tracker</Text>
+        <FlatList
+          data={medicines}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={true}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  image: {
+    width: 300,
+    height: 300,
+    marginTop: 0,
+    resizeMode: "contain",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  content: {
+    flex: 1,
+    marginTop: 0,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  dose: {
+    marginTop: 5,
+    fontSize: 16,
+    fontWeight: "400",
+  },
+  description: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 10,
+  },
+  item: {
+    backgroundColor: "#f9c2ff",
+    padding: 20,
+    marginVertical: 8,
+    borderRadius: 10,
+    width: "100%",
   },
 });
